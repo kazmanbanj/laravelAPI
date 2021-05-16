@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Post as PostResources;
 use App\Post;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Post as PostResources;
 
 class PostController extends Controller
 {
@@ -19,7 +20,7 @@ class PostController extends Controller
         // return response()->json(["data"=>$posts, "author" => "Banjoko"]);    //to return alogside additional details
 
         // $posts = Post::all();    //you can use this or paginate to separate the users posts
-        $posts = Post::paginate(1);
+        $posts = Post::paginate(20);
 
         return new PostResources($posts);
     }
