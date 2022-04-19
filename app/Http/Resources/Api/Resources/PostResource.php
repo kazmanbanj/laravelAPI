@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Api\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Post extends JsonResource
+class PostResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,9 +20,7 @@ class Post extends JsonResource
     public function with($request) 
     {
         return [
-            "Name" => 'Banjoko',
-            "Phone number" => '08084833968',
-            "City" => 'Lagos',
+            'message' => 'success'
         ];
     }
 }

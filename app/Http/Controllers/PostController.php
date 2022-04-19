@@ -1,90 +1,45 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Resources\Post as PostResources;
 use App\Post;
 use Illuminate\Http\Request;
+use App\Http\Requests\PostRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\Resources\PostResource;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        // return Post::all();
+        $posts = Post::paginate(10);
         // return response()->json(["data"=>$posts, "author" => "Banjoko"]);    //to return alogside additional details
 
-        // $posts = Post::all();    //you can use this or paginate to separate the users posts
-        $posts = Post::paginate(1);
-
-        return new PostResources($posts);
+        return (new PostResource($posts))->response()->setStatusCode(200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        $data = $request->validate([
-            "title" => ['required','min:4','unique'],
-            "body" => ['required','min:4','unique']
-        ]);            //to validate data entry, use this
+        Post::create($request->all());
 
-        // return $request;
-        // Post::create($request->all());
-        Post::create($data);
-
-        return response()->json(["Message"=>"Record created successfully"]);
+        return response()->json(["Message"=>"Record created successfully"], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Post  $post
-     * @return \Illuminate\Http\Response
-     */
     public function show(Post $post)
     {
-        // return $post;
-        return new PostResources($post);
-
+        return new PostResource($post);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Post  $post
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Post $post)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Post  $post
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Post $post)
     {
         $UpdatedData = $post->update($request->all());
@@ -92,34 +47,34 @@ class PostController extends Controller
         return response()->json(["data" => "Record Updated"], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Post  $post
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Post $post)
     {
         $post->delete();
 
         return response()->json(["data" => "Record Deleted!!!"], 200);
-
     }
 
-    /**
-     * Restore the specified resource from storage.
-     *
-     * @param  \App\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-     public function restore(Post $post, $id)
-     {
-        //  $post->restore();
+    public function permanentDestroy(Post $post)
+    {
+        $post->delete();
+        $post->onlyTrashed()->forceDelete();
+
+        return response()->json(["data" => "Record Permanently Deleted!!!"], 200);
+    }
+
+    public function restore(Post $post, $id)
+    {
         $data = Post::withTrashed()->find($id);
 
         $data->restore();
- 
-         return response()->json(["data" => "Record Restored!!!"], 200);
- 
-     }
+
+        return response()->json(["data" => "Record Restored!!!"], 200);
+    }
+
+    public function permanentDestroySoftDeleted(Post $post)
+    {
+        $post->onlyTrashed()->forceDelete();
+    
+        return response()->json(["data" => "Record Permanently Deleted!!!"], 200);
+    }
 }
