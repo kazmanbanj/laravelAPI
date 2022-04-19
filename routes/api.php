@@ -14,18 +14,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::get('/posts', 'PostController@index');
+Route::get('v1/posts', 'PostController@index');
 
-Route::get('/post/{post}', 'PostController@show');
+Route::get('v1/post/{post}', 'PostController@show');
 
-Route::post('/post/{post}', 'PostController@store');
+Route::post('v1/posts', 'PostController@store');
 
-Route::put('/post/{post}', 'PostController@update');
+Route::put('v1/post/{post}', 'PostController@update');
 
-Route::delete('/post/{post}', 'PostController@destroy');
+Route::delete('v1/post/{post}', 'PostController@destroy');
 
-Route::post('/restore/{id}', 'PostController@restore');
+Route::delete('v2/post/{post}', 'PostController@permanentDestroy');
+
+Route::post('v1/restore/{id}', 'PostController@restore');
+
+Route::delete('v3/post/{post}', 'PostController@permanentDestroySoftDeleted');
